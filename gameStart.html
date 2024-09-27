@@ -1,6 +1,27 @@
 <!DOCTYPE html>
 <head>
     <title>Quake Escape: Lab of Secrets</title>
+    <script src="https://cdn.pyodide.org/en/stable/full/pyodide.js"></script>
+    <script>
+        async function loadPyodideAndRun() {
+            let pyodide = await loadPyodide();
+            await pyodide.runPythonAsync(`
+                import random
+                import json
+
+                def get_game_logic():
+                    items = ["key", "flashlight", "map"]
+                    selected_item = random.choice(items)
+                    return json.dumps({"item": selected_item})
+
+                result = get_game_logic()
+            `);
+            let result = await pyodide.runPythonAsync("result");
+            console.log("You found a:", JSON.parse(result).item);
+        }
+
+        window.onload = loadPyodideAndRun;
+    </script>
 </head>
 <body>
     <h1>Quake Escape: Lab of Secrets</h1>
