@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<head>
+    <title>Tutorial - Quake Escape: Lab of Secrets</title>
+</head>
+<body>
+    <h1>Tutorial</h1>
+    <p>Welcome to Quake Escape! Here’s how to navigate your adventure:</p>
+    <ul style="list-style-type: none; padding: 0;">
+        <li><strong>Move:</strong> Use the joysticks to navigate.</li>
+        <li><strong>Interact:</strong> Click an object to interact with it.</li>
+        <li><strong>Inventory:</strong> Access your inventory to view collected items.</li>
+        <li><strong>Puzzles:</strong> Solve puzzles by combining items and using clues.</li>
+        <li><strong>Timer:</strong> Keep an eye on the timer! You need to escape before time runs out.</li>
+        <li><strong>Goodluck! May the odds be in your favor.</strong></li>
+    </ul>
+    <button onclick="goGame()">Proceed to the Story</button>
+    <button onclick="goHome()">Back to Home</button>
+
+    <script>
+        function goGame() {// Redirect to the game 
+            window.location.href = 'gameStart.html'; 
+        }
+        function goHome() {// Redirect to the home screen
+            window.location.href = 'HomeScreen.html'; 
+        }
+    </script>
+</body>
+</html>

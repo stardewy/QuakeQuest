@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<head>
+    <title>Quake Escape: Lab of Secrets</title>
+</head>
+<body>
+    <h1>Quake Escape: Lab of Secrets</h1>
+    <div id="timer">Time Left: <span id="time">300</span> seconds</div>
+    <div id="gameArea">
+        <!-- Game elements like puzzles, items, etc., will go here -->
+    </div>
+    <button onclick="showInventory()">Inventory</button>
+    <button onclick="togglePause()">Pause</button>
+
+    <script>
+        let timeLeft = 300; // 5 minutes
+        let timerInterval; // To hold the timer interval
+        let isPaused = false; // Track the pause state
+        const timerElement = document.getElementById('time');
+
+        // Timer function
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Time's up! You couldn't escape!");
+                    window.location.href = 'TimesUp.html'; // Redirect to Times Up screen
+                } else {
+                    timeLeft--;
+                    timerElement.innerText = timeLeft;
+                }
+            }, 1000);
+        }
+
+        startTimer(); // Start the timer initially
+
+        function showInventory() {
+            alert("Inventory is currently empty. Find items to fill it!");
+            // Add inventory logic here
+        }
+
+        function togglePause() {
+            if (isPaused) { // Unpauses the game
+                startTimer();
+                isPaused = false;
+                alert("Game resumed!");
+            } else { // Pause the game
+                clearInterval(timerInterval);
+                isPaused = true;
+                alert("Game paused. Click 'Pause' again to resume.");
+            }
+        }
+    </script>
+</body>
+</html>
