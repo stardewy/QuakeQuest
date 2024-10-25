@@ -1,0 +1,24 @@
+body { font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background-size: cover; /* Make sure the background image covers the whole screen */
+    background-position: center;
+    transition: background 1s ease-in-out; /* Smooth transition for background changes */
+}
+#story {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    user-select: none;
+    width: 50%;
+}
+#story.end {
+    background-color: #f0f0f0;
+    color: gray;
+}
+#resumeBtn {
+    margin-top: 20px;
+    display: none;  /* Initially hidden */
+}

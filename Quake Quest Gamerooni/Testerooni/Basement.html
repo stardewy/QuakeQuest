@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scene 3: Living Room</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden; /* Hide scrollbars */
+            font-family: Arial, sans-serif;
+        }
+        #living-room {
+            background-image: url('living-room.jpg'); /* Add your living room image here */
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            position: relative;
+            transition: transform 1s ease-in-out; /* For zoom effect */
+            opacity: 0; /* Initially hidden */
+        }
+        #door {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200px; /* Adjust width as needed */
+            height: 400px; /* Adjust height as needed */
+            background-image: url('door.png'); /* Add your door image here */
+            background-size: contain;
+            background-repeat: no-repeat;
+            transform: translate(-50%, -100%); /* Center the door */
+        }
+        #monologue {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            display: none; /* Initially hidden */
+        }
+        #black-screen {
+            display: none; /* Initially hidden */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            opacity: 0; /* Start invisible */
+            transition: opacity 2s ease-in-out; /* For fade effect */
+        }
+        #basement {
+            background-image: url('basement.jpg'); /* Add your basement image here */
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1; /* Behind the living room */
+            transition: opacity 1s ease-in-out; /* For fading effect */
+            opacity: 1; /* Ensure basement is visible initially */
+        }
+        @keyframes shake {
+            0% { transform: translate(0); }
+            25% { transform: translate(-15px, 5px); }
+            50% { transform: translate(15px, -5px); }
+            75% { transform: translate(-15px, 5px); }
+            100% { transform: translate(0); }
+        }
+    </style>
+</head>
+<body>
+    <div id="basement"></div>
+    <div id="living-room">
+        <div id="door"></div>
+        <div id="monologue">Wait, what is happening?!</div>
+    </div>
+    <div id="black-screen"></div>
+
+    <!-- Audio element for the shaking sound effect -->
+    <audio id="shake-sound" src="shake-sound.mp3"></audio>
+
+    <script>
+        // Seismic data (to be changed when UPRI website fixes itself)
+        const seismicData = {
+            magnitude: 7.0,  
+            velocity: 100,   
+            acceleration: 9.8 
+        };
+
+        // Function to calculate shaking intensity based on seismic data
+        function calculateShakingIntensity(data) {
+            const { magnitude, acceleration } = data;
+            return acceleration * magnitude * 0.1; // Adjust the scaling factor as needed
+        }
+
+        // Function to simulate the actions in Scene 3
+        function scene3Actions() {
+            const livingRoom = document.getElementById('living-room');
+            const basement = document.getElementById('basement');
+
+            // Show the living room and zoom in on the door
+            livingRoom.style.opacity = 1; // Make living room visible
+            livingRoom.style.transform = 'scale(1.5)'; // Zoom effect
+
+            // Open the door after a short delay
+            setTimeout(() => {
+                const door = document.getElementById('door');
+                door.style.display = 'none'; // Hide the door
+                livingRoom.style.backgroundColor = 'black'; // Change background to black for arch effect
+            }, 2000); // Time before opening the door
+
+            // Show the monologue
+            setTimeout(() => {
+                const monologue = document.getElementById('monologue');
+                monologue.style.display = 'block';
+            }, 3000); // Show after 3 seconds
+
+            // Simulate shaking
+            setTimeout(() => {
+                shakeEffect(); // Call the shake effect function
+            }, 4000); // Start shaking after the monologue
+
+            // Transition to living room background during shaking
+            setTimeout(() => {
+                basement.style.opacity = 0; // Fade out basement
+                livingRoom.style.opacity = 0; // Ensure living room is initially hidden
+
+                // Allow some time for the basement to fade out before showing the living room
+                setTimeout(() => {
+                    livingRoom.style.backgroundImage = "url('living-room.jpg')"; // Switch to living room background
+                    livingRoom.style.opacity = 1; // Make the living room visible
+                }, 1000); // Delay for the basement to fade out
+            }, 6000); // Transition after shaking
+
+            // Fade into a black screen for hallucination
+            setTimeout(() => {
+                const blackScreen = document.getElementById('black-screen');
+                blackScreen.style.display = 'block'; // Show black screen
+                blackScreen.style.opacity = 1; // Fade in effect
+
+                // Redirect to another HTML file after the blackout
+                setTimeout(() => {
+                    window.location.href = 'Bedroom.html'; // Redirect to Lvl 2, Scene 1 (Bedroom)
+                }, 3000); // 3 seconds after the black screen fully appears
+            }, 8000); // Start fading to black after the living room transition
+        }
+
+        // Function to simulate shaking effect with sound. 
+        function shakeEffect() {
+            const livingRoom = document.getElementById('living-room');
+            const shakeSound = document.getElementById('shake-sound');
+            
+            livingRoom.style.animation = 'shake 0.5s infinite'; // Apply shake animation
+            shakeSound.play(); // Play shaking sound
+
+            // Remove shake effect after a few shakes
+            setTimeout(() => {
+                livingRoom.style.animation = 'none'; // Stop shaking
+                shakeSound.pause(); // Stop shaking sound
+                shakeSound.currentTime = 0; // Reset sound to the beginning
+            }, 3000); // Duration for shake
+        }
+
+        // Start scene actions when the page loads
+        window.onload = scene3Actions;
+    </script>
+</body>
+</html>
+

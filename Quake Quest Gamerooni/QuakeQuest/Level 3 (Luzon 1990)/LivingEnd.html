@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"> <!-- Add this line for UTF-8 encoding -->
+    <title>Lindol-aryo</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-size: cover; /* Make sure the background image covers the whole screen */
+            background-position: center;
+            transition: background 1s ease-in-out; /* Smooth transition for background changes */
+        }
+        #story {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            user-select: none;
+            width: 50%;
+        }
+        #story.end {
+            background-color: #f0f0f0;
+            color: gray;
+        }
+        #black-screen {
+            display: none; /* Initially hidden */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            opacity: 0; /* Start invisible */
+            transition: opacity 2s ease-in-out; /* For fade effect */
+        }
+    </style>
+    <script>
+        const storySequence = [
+            "What...where am I...? What happened?", // Changed ellipsis to three dots
+            "[^(&&($]? What are you doing lying down on the floor?",
+            "[Lolo looks down at me as he shuts the door to the basement.]",
+            "I...nothing. I just had a weird <b>dream</b>.",
+        ];
+
+        let currentPartIndex = 0;  // Start the story from the first part
+        let paused = false;  // Initialize paused variable
+
+        function displayStoryPart() {
+            const storyElement = document.getElementById('story');
+            const currentStoryPart = storySequence[currentPartIndex];
+            
+            storyElement.innerHTML = currentStoryPart;
+
+            if (currentPartIndex === storySequence.length - 1) {
+                storyElement.classList.add('end');
+            }
+        }
+
+        function handleClick() {
+            if (!paused && currentPartIndex < storySequence.length - 1) {
+                currentPartIndex++;  // Move to the next part
+                displayStoryPart();  // Refresh the story display with the new part
+            } else if (currentPartIndex === storySequence.length - 1) {
+                // If it's the last part of the story, start fade to black effect
+                const blackScreen = document.getElementById('black-screen');
+                blackScreen.style.display = 'block'; // Show black screen
+                setTimeout(() => {
+                    blackScreen.style.opacity = 1; // Fade in effect
+                }, 10); // Small timeout to ensure display property takes effect
+            }
+        }
+
+        window.onload = function() {
+            displayStoryPart();
+            document.getElementById('story').addEventListener('click', handleClick);
+        };
+    </script>
+</head>
+<body>
+    <div id="living-room" class="scene">
+        <img src="livingroom.jpg" alt="Living Room">
+    </div>
+    <div id="story"></div>
+    <div id="black-screen"></div>
+</body>
+</html>
+
+
+

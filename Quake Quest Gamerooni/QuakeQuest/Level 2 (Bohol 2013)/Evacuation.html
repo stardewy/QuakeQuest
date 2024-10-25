@@ -1,0 +1,188 @@
+<!--Issues: 
+1. How to insert epicenter puzzle
+2. The [insert] divs and input should disappear after use
+3 Fade to Black does not work
+4. Story is supposed to pause until the right text input (PHILVOLCS) is given
+5. Shake animation won't work for all-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Evacuation Center Aftermath</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            background-image: url('evacuation.jpg'); /* Ensure correct background image */
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+        }
+        #story-container {
+            margin: 20px;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            width: 50%;
+            cursor: pointer;
+            user-select: none;
+        }
+        #newspaper, #phone, #website, #puzzle, #darkness-overlay {
+            display: none;
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        #darkness-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            opacity: 0;
+            transition: opacity 1s;
+            z-index: 10;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(-10px, -10px); }
+            50% { transform: translate(10px, 10px); }
+            75% { transform: translate(-10px, 10px); }
+        }
+        .shaking { animation: shake 0.5s infinite; }
+    </style>
+</head>
+<body>
+    <div id="darkness-overlay"></div>
+    <div id="story-container">Click to start...</div>
+    <div id="newspaper">[News article appears here]</div>
+    <div id="phone">[Phone input appears here]</div>
+    <div id="website">[Website with circle intersection puzzle]</div>
+    <div id="puzzle">
+        <input type="text" id="phivolcs-input" placeholder="Input 'PHIVOLCS' here">
+        <button id="submit-phivolcs">Submit</button>
+    </div>
+
+    <audio id="shakingSound" src="aftershock.mp3"></audio>
+    
+    <script>
+        const storyParts = [
+            { text: "Me and my housemates were able to get out of the house safely and head to an evacuation center in Cebu. I wasn’t able to get that much sleep last night." },
+            { text: "Despite volunteering for disaster responses for many years, yesterday’s earthquake was the scariest. I can only be thankful I managed to survive." },
+            { text: "I should probably check the news and see how other affected areas are holding up.", showNewspaper: true },
+            { text: "A phone number? But it's unreadable! How could the printer mess up on such an important part?", newspaperFlip: true },
+            { text: "The earthquake had a magnitude of 7.2. The intensity is unreadable…", },
+            { text: "PEIS... Philippine Earthquake Intensity Scale. Let’s search this online.", showPhone: true },
+            { text: "Got it! PHIVOLCS: The Philippine Institute of Volcanology and Seismology.", showWebsite: true },
+            { text: "Using the PEIS, I should estimate the intensity levels.", showPuzzle: true },
+            { text: "I think I get it now!" },
+            { text: "The magnitude shows energy released, while intensity shows local damage." },
+            { text: "Maybe the unreadable numbers relate to the missing phone number…", dialPhone: true },
+            { text: "Dispatcher: Hello, this is [#*@#&^] Organization, how may I help you?" },
+            { text: "Hello! I am [&#*^&@]. I am currently in an evacuation center with other survivors. It is located in ____." },
+            { text: "[You describe your current situation.]" },
+            { text: "Dispatcher: If you would like to avoid the strong tremors of coming aftershocks, we advise you and your companions to move further away from the earthquake’s epicenter if possible. Would you happen to know how far from it you currently are?" },
+            { text: "No, we don’t know right now…" },
+            { text: "Dispatcher: In that case, you may access our website to see the data that seismic stations have gathered to find the epicenter of the earthquake. You may use this information to decide on your next course of action." },
+            { text: "This is noted. Thank you so much!" },
+            { text: "Dispatcher: Please stay safe!" },
+            { text: "Let’s check out that website." },
+            { text: "Woah, all of this seems to be too high-tech… No matter! I think I can figure it out." },
+            { text: "The dots in the middle of the circles represent the stations. The circle around them is each of their estimated distance from the epicenter of the earthquake. The only problem is that I don’t know where the exact epicenter is." },
+            { text: "I’m stumped. …Maybe it has something to do with something they have in common?" },
+            { text: "The magnitude shows energy released, while intensity shows local damage." },
+            { text: "Maybe the unreadable numbers relate to the missing phone number…", dialPhone: true },
+            { text: "Hello! I’m at an evacuation center in Cebu. We’re advised to move from the epicenter." },
+            { text: "Let’s check the epicenter location…", openWebsite: true },
+            { text: "These circles represent seismic stations’ distances from the epicenter. The intersection must be the epicenter." },
+            { text: "Now let’s check our distance and head further north." },
+            { text: "Suddenly, everything goes dark!", fadeToBlack: true, shake: true },
+            { text: "An aftershock! This one’s intense… Wait, a rumbling sound is approaching!", landslideApproach: true },
+            { text: "A landslide! It’s getting closer; I need to get out now!" },
+            { text: "Should I hold onto the bookshelf or run outside?", showChoices: true }
+        ];
+
+        let currentPart = 0;
+
+        function displayStoryPart() {
+            const part = storyParts[currentPart];
+            document.getElementById('story-container').innerHTML = part.text;
+            
+            if (part.shake) startShake();
+            if (part.showNewspaper) document.getElementById('newspaper').style.display = 'block';
+            if (part.showPhone) document.getElementById('phone').style.display = 'block';
+            if (part.showWebsite) document.getElementById('website').style.display = 'block';
+            if (part.showPuzzle) document.getElementById('puzzle').style.display = 'block';
+            if (part.dialPhone) { /* Dialing action */ }
+            if (part.fadeToBlack) fadeToBlack();
+            if (part.landslideApproach) startLandslide();
+            if (part.showChoices) showChoices(); // Show choices if part is set to show
+        }
+
+        function showChoices() {
+            document.getElementById('story-container').innerHTML += "<br>What will you do?<br><button onclick='makeChoice(\"hold\")'>Hold onto the bookshelf</button> <button onclick='makeChoice(\"run\")'>Run outside</button><button onclick='makeChoice(\"curl\")'>Curl into a Ball</button>";
+        }
+
+        function startShake() {
+            document.body.classList.add('shaking');
+            document.getElementById('shakingSound').play();
+        }
+
+        function stopShake() {
+            document.body.classList.remove('shaking');
+            document.getElementById('shakingSound').pause();
+        }
+
+        function fadeToBlack() {
+            stopShake();
+            document.getElementById('darkness-overlay').style.opacity = '1';
+            setTimeout(() => {
+                document.getElementById('darkness-overlay').style.opacity = '0';
+                displayNextPart();
+            }, 2000);
+        }
+
+        function startLandslide() {
+            startShake();
+            setTimeout(() => fadeToBlack(), 3000);
+        }
+
+        function displayNextPart() {
+            currentPart++;
+            if (currentPart < storyParts.length) displayStoryPart();
+        }
+
+        function makeChoice(choice) {
+            if (choice === "curl") {
+                document.getElementById('story-container').innerHTML = "The landslide reached us! Everyone, brace yourselves!";
+                fadeToBlack(); // Trigger the fade to black after making the correct choice
+                window.location.href = '../Level 3 (Luzon 1990)/DiningHall.html';
+            } else {
+                window.location.href = "Restart.html"; // Redirect to Restart.html for wrong choice
+            }
+        }
+
+        // PHIVOLCS input handling
+        document.getElementById('submit-phivolcs').addEventListener('click', function() {
+            const input = document.getElementById('phivolcs-input').value.trim();
+            if (input.toLowerCase() === "phivolcs") {
+                document.getElementById('website').style.display = 'block'; // Show website after correct input
+                document.getElementById('puzzle').style.display = 'none'; // Hide the puzzle input
+            } else {
+                alert("Incorrect! Try again."); // Alert for wrong input
+            }
+        });
+
+        document.getElementById('story-container').addEventListener('click', displayNextPart);
+        window.onload = displayStoryPart;
+    </script>
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Study Room Scene</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+            transition: background 1s ease-in-out; 
+        }
+        #story {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            user-select: none;
+            width: 50%;
+            display: none; /* Initially hidden */
+        }
+        #story.end {
+            background-color: #f0f0f0;
+            color: gray;
+        }
+        #resumeBtn {
+            margin-top: 20px;
+            display: none;  
+        }
+        #fill-blank-container, #password-container {
+            display: none;
+            margin-top: 20px;
+        }
+        input {
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Study Room Scene</h1> 
+    <div id="study-room" class="scene">
+        <img src="study-room.jpg" alt="Study Room" usemap="#studymap">
+        <map name="studymap"> 
+            <area shape="rect" coords="0,0,233,202" href="javascript:void(0);" onclick="interactWithDrawer()">
+            <area shape="rect" coords="0,202,233,404" href="javascript:void(0);" onclick="interactWithMap()">
+            <area shape="rect" coords="233,0,466,202" href="javascript:void(0);" onclick="interactWithBoard()">
+            <area shape="rect" coords="233,0,466,202" href="articles.html" alt="Inspect Articles"> 
+            <area shape="rect" coords="466,202,699,404" href="javascript:void(0);" onclick="interactWithComputer()">
+            <area shape="rect" coords="466,0,699,202" href="javascript:void(0);" onclick="interactWithCPU()">
+            <area shape="rect" coords="233,202,466,404" href="javascript:void(0);" onclick="interactWithBookshelf()">
+        </map>
+    </div>
+    <div id="story"></div>
+    <button id="resumeBtn" onclick="resumeStory()">Continue the story</button>
+
+    <!-- Fill in the blanks section -->
+    <div id="fill-blank-container">
+        <input type="text" id="blank-input" placeholder="Type here...">
+        <button onclick="checkAnswer()">Submit</button>
+    </div>
+
+    <!-- Password input after reading the article -->
+    <div id="password-container">
+        <input type="text" id="password-input" placeholder="Password...">
+        <button onclick="checkPassword()">Submit</button>
+    </div>
+    <script>
+        // Story sequence and branch interactions. Issue: articles.html won't open after 1st board dialogue.
+        const studyRoomSequence = {
+            drawer: [
+                "Aha. Could the key be in here?",
+                "It’s locked. Classic. But knowing lolo, there are probably some hints around the room to open this, in case he forgets how. Let's try the <b>map</b>.",
+            ],
+            map: [
+                "Lolo sure likes to collect all sorts of stuff. I guess it’s part of being a seismologist. Still, it’s kind of odd having a world map plastered on the wall instead of a painting.",
+                "Ah, but it’s not just a regular world map. It’s a map of the <b>tectonic plates</b> that move around below the Earth’s crust.",
+                "Why are there random pins around the map? Could they mean something?",
+                "The pins seem to align with specific letters…I wonder if they form a word?",
+                "Fill in the blanks: B _ _ _ D",
+                "[Word combination obtained!] That’s odd, why does it spell out 'board'?",
+                "Now that I think about it, I remember lolo having a giant bulletin <b>board</b> around here."
+            ],
+            board: [
+                "Hmm, this board has several articles pinned, but some of the text is smudged. Perhaps there are some <b>clues</b> here.",
+                "There seems to be something about <b>July 27, 2022</b> and an earthquake. This date looks significant, but it’s too smudged to read the rest.",
+                "Maybe I should check the <b>articles</b> more closely to get the full picture."
+            ],
+            cpu: [
+                "Oh, it’s still off. How do I unlock this?",
+                "The Philippines is subducting...",
+                "Maybe I should look at the <b>board</b> for clues again."
+            ],
+            computer: [
+                "I wonder if this is the computer password?",
+                "Input the password:_ _ _ _ _ _ _" +  " _ _ _ " +  "_ _ _ _ _ _ _ _" + "_ _ _ _ _ _ _ _ _ _ _", // Issue: won't space out
+                "Ah, it opened! Finally!"
+            ],
+            bookshelf: [
+                "Hmm, I don’t quite recall what each of these plate boundaries look like. Perhaps these <b>pages</b> explain them. But which book do these numbers refer to?",
+                "Wow, this book looks <b>well-loved</b>. Could it be this one?",
+                "It is this one! Too easy.",
+                "It seems like lolo scribbled over these words. Some letters resemble numbers. Wait…<b>numbers</b>?", //Issue: Won't interact with number lock here
+                "The Philippines is <b>subducting</b>...", // there is supposed to be an input for this 0,3,6
+                "I remember now! The Philippines is 'subducting' because there’s a convergent boundary between the Eurasian plate in the west and Philippine plate in the east, creating a subduction zone."
+            ],
+            conclusion: [
+                "[Password obtained!] Bingo! I’m in. Now we can test that <b>password</b> from earlier.",
+                "...What’s all this?", //A day plot is supposed to show up here (see dayplot.py) but I am unsure how to execute.
+                "July 27, 2022. This must be grandfather’s recent project. If I recall correctly, an <b>earthquake</b> happened in this area that day.",
+                "Let me see if I can identify what <b>time</b> the earthquake happened…Maybe it will be able to open the drawer lock?", //there is supposed to be an input for this based on day plot
+                "Ah, it opened! Finally!", //The key should go into a viewable inventory that I am unsure how to create.
+                "[Key obtained!] A key…could it be for the door leading to the basement in the living room? Maybe I should <b>try it out </b>."
+            ]
+        };
+
+        let currentPartIndex = 0;  // Start the story from the first part
+        let paused = false;  // Define paused variable
+        let currentInteraction = null; // Track the current interaction
+
+        // Function to display the current story part
+        function displayStoryPart() {
+            const storyElement = document.getElementById('story');
+            const currentStoryPart = studyRoomSequence[currentInteraction][currentPartIndex];
+
+            // Display the current part of the story
+            storyElement.innerHTML = currentStoryPart;
+
+            // If we reach the last part of the interaction, change the style
+            if (currentPartIndex === studyRoomSequence[currentInteraction].length - 1) {
+                storyElement.classList.add('end');
+            } else {
+                storyElement.classList.remove('end');
+            }
+
+            // Pause for input if needed
+            if (currentStoryPart.includes("Fill in the blanks")) {
+                paused = true;
+                document.getElementById('fill-blank-container').style.display = 'block';
+            }
+        }
+
+        // Function to handle the click and move to the next story part
+        function handleClick() {
+            if (!paused && currentPartIndex < studyRoomSequence[currentInteraction].length - 1) {
+                currentPartIndex++;  // Move to the next part
+                displayStoryPart();  // Refresh the story display with the new part
+
+                // Hide the resume button if we progress
+                document.getElementById('resumeBtn').style.display = 'none';
+            }
+        }
+
+        // Function to resume the story
+        function resumeStory() {
+            paused = false;  // Unpause the story
+            document.getElementById('resumeBtn').style.display = 'none'; // Hide the resume button
+            handleClick();  // Move to the next part
+        }
+
+        // Function for interacting with the drawer
+        function interactWithDrawer() {
+            paused = true;  // Pause the story
+            currentInteraction = 'drawer'; // Set current interaction
+            currentPartIndex = 0; // Reset index for drawer interaction
+            document.getElementById('resumeBtn').style.display = 'inline-block'; // Show resume button
+            document.getElementById('story').style.display = 'block'; // Show the story text
+            displayStoryPart(); // Show the first part of the story
+        }
+
+        // Function for interacting with the map
+        function interactWithMap() {
+            paused = true;  // Pause the story
+            currentInteraction = 'map'; // Set current interaction
+            currentPartIndex = 0; // Reset index for map interaction
+            document.getElementById('resumeBtn').style.display = 'inline-block'; // Show resume button
+            document.getElementById('story').style.display = 'block'; // Show the story text
+            displayStoryPart(); // Show the first part of the story
+        }
+
+        // Function for interacting with the board
+        function interactWithBoard() {
+            paused = true;  // Pause the story
+            currentInteraction = 'board'; // Set current interaction
+            currentPartIndex = 0; // Reset index for board interaction
+            document.getElementById('resumeBtn').style.display = 'inline-block'; // Show resume button
+            document.getElementById('story').style.display = 'block'; // Show the story text
+            displayStoryPart(); // Show the first part of the story
+        }
+
+        // Function for interacting with the CPU
+        function interactWithCPU() {
+            paused = true;  // Pause the story
+            currentInteraction = 'cpu'; // Set current interaction
+            currentPartIndex = 0; // Reset index for CPU interaction
+            document.getElementById('resumeBtn').style.display = 'inline-block'; // Show resume button
+            document.getElementById('story').style.display = 'block'; // Show the story text
+            displayStoryPart(); // Show the first part of the story
+        }
+
+        // Function for interacting with the computer
+        function interactWithComputer() {
+            paused = true;  // Pause the story
+            currentInteraction = 'computer'; // Set current interaction
+            currentPartIndex = 0; // Reset index for computer interaction
+            document.getElementById('resumeBtn').style.display = 'inline-block'; // Show resume button
+            document.getElementById('story').style.display = 'block'; // Show the story text
+            displayStoryPart(); // Show the first part of the story
+            document.getElementById('password-container').style.display = 'block'; // Show password input
+        }
+
+        // Function for interacting with the bookshelf
+        function interactWithBookshelf() {
+            paused = true;  // Pause the story
+            currentInteraction = 'bookshelf'; // Set current interaction
+            currentPartIndex = 0; // Reset index for bookshelf interaction
+            document.getElementById('resumeBtn').style.display = 'inline-block'; // Show resume button
+            document.getElementById('story').style.display = 'block'; // Show the story text
+            displayStoryPart(); // Show the first part of the story
+        }
+
+        // Check the fill in the blank answer
+        function checkAnswer() {
+            const userInput = document.getElementById('blank-input').value.toUpperCase();
+            if (userInput === "BOARD") {
+                paused = false; // Continue the story
+                document.getElementById('fill-blank-container').style.display = 'none'; // Hide the fill-in-blank section
+                handleClick();  // Move to the next part
+            } else {
+                alert("Incorrect! Try again.");
+            }
+        }
+
+        // Check the password input
+        function checkPassword() {
+            const passwordInput = document.getElementById('password-input').value.toUpperCase(); //issue: it says incorrect even if the password is right.
+            if (passwordInput === "prepare for incoming destruction") { // password atm
+                paused = false; // Continue the story
+                document.getElementById('password-container').style.display = 'none'; // Hide the password input
+                handleClick();  // Move to the next part
+            } else {
+                alert("Incorrect password! Try again.");
+            }
+        }
+
+        // Code and illustrations are still unfinished. I don't know where to insert this atm
+        function basement() { // Define what happens when the basement area is clicked
+            alert("You are now entering the basement.");
+            window.location.href = "Basement.html";  // Redirect to another file 
+        }
+
+        // Set up click event listener on the story div for progressing
+        document.getElementById('story').addEventListener('click', handleClick);
+
+        // Hide the story initially
+        document.getElementById('story').style.display = 'none';
+    </script>
+
+</body>
+</html>
+

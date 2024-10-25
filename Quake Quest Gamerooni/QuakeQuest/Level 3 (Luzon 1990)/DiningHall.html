@@ -1,0 +1,212 @@
+<!--Issues with code: Background img won't shake, newspaper.html won't work on time-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Luzon Earthquake Simulation - Dining Hall</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            background-image: url('dining_hall.jpg');
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+            transition: background 1s ease-in-out;
+        }
+        #story {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: rgba(0, 0, 0, 0.7);
+            cursor: pointer;
+            user-select: none;
+            width: 50%;
+            color: white;
+        }
+        #newspaper {
+            position: absolute;
+            bottom: 30%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            cursor: pointer;
+            display: none;
+        }
+        #newspaper.zoomed {
+            animation: zoomIn 0.5s forwards;
+        }
+        #choices {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            width: 80%;
+            max-width: 600px;
+        }
+        .choice-btn {
+            display: block;
+            margin: 10px auto;
+            padding: 15px 20px;
+            background-color: #555;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 5px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        .choice-btn:hover {
+            background-color: #777;
+        }
+        #puzzle {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            text-align: center;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        #puzzleInput {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+        }
+        #darkness-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            opacity: 0;
+            transition: opacity 1s;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        @keyframes shake-background {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(-10px, -10px); }
+            50% { transform: translate(10px, 10px); }
+            75% { transform: translate(-10px, 10px); }
+        }
+        .shaking {
+            animation: shake-background 0.5s infinite;
+        }
+        @keyframes zoomIn {
+            from { transform: scale(1); }
+            to { transform: scale(1.5); }
+        }
+    </style>
+</head>
+<body>
+    <audio id="shakingSound" src="inshake.mp3"></audio>
+    <div id="darkness-overlay"></div>
+    <div id="story"></div>
+    <div id="newspaper" onclick="openNewspaper()"></div>
+    <div id="choices">
+        <button class="choice-btn" onclick="makeChoice('elevator')">Use the elevator - It's still functioning fine</button>
+        <button class="choice-btn" onclick="makeChoice('stairs')">Take the emergency stairs - The railings will support you</button>
+        <button class="choice-btn" onclick="makeChoice('dining')">Stay in the dining hall - Duck under the sturdy tables (Watch the chandelier!)</button>
+        <button class="choice-btn" onclick="makeChoice('meeting')">Move to the meeting room next door</button>
+    </div>
+    <div id="puzzle">
+        <p>A note stuck to the door: "this is a stubborn door! open with a _ _ _ _ _;</p>
+        <p>hints: fore_ _ _ _ _ → main___ → after___"</p>
+        <input type="text" id="puzzleInput" placeholder="Enter the answer">
+        <button class="choice-btn" onclick="checkPuzzle()">Try to open</button>
+    </div>
+
+    <script>
+        const storyParts = [
+            { text: "The whole city's been abuzz lately, with all the shaking felt from all over the region. Some say it could be a sign that the <b>Big One</b> is coming. Others say that it's just another ruse set up by the government to cover up another one of their top-secret projects." },
+            { text: "Whatever it is, everyone seems to be on edge. That's why our local administration decided to hold a briefing in this hotel. Their agenda: to discuss possible evacuation plans and operations." },
+            { text: "The hotel itself is not bad at all, daresay it's almost as cozy as my house. The place also offers free commodities and a good meal." },
+            { text: "The meeting is not set to start until later, so I should take my time eating this meal. Perhaps even entertain myself by reading these newspapers I picked up from the newsstand.", showNewspaper: true },
+            { text: "The news about these <b>foreshocks</b> never disappears from the front pages. No wonder the government was quick to find ways to ease everyone's fears.", newspaperZoom: true },
+            { text: "What… Is the building shaking!? Could it be another foreshock? But this one seems to be stronger than the other ones. It seems to be tearing the hotel from its foundations!", shake: true },
+            { text: "Okay, no need to panic. I need to look around, to survey my surroundings, and decide on my next course of action." },
+            { text: "Right now, I'm on the second floor. What should I do?", showChoices: true },
+            { text: "What?! It’s not opening? There’s a note in it…" },
+            { text: "Great, a puzzle conveniently placed in here. So, what goes in these blanks?" },
+        ];
+
+        let currentPart = 0;
+
+        function showStoryPart() {
+            const part = storyParts[currentPart];
+            document.getElementById('story').innerHTML = part.text;
+            
+            if (part.shake) {
+                document.body.classList.add('shaking');
+                document.getElementById('shakingSound').play();
+            }
+            
+            if (part.showNewspaper) {
+                document.getElementById('newspaper').style.display = 'block';
+            }
+            
+            if (part.newspaperZoom) {
+                document.getElementById('newspaper').classList.add('zoomed');
+            }
+            
+            if (part.showChoices) {
+                document.getElementById('choices').style.display = 'block';
+            }
+        }
+
+        function advanceStory() {
+            if (!storyParts[currentPart].showChoices) {
+                currentPart++;
+                if (currentPart < storyParts.length) {
+                    showStoryPart();
+                }
+            }
+        }
+
+        function openNewspaper() {
+            window.open('newspaper.html', '_blank'); 
+        }
+
+        function makeChoice(choice) {
+            document.getElementById('choices').style.display = 'none';
+            if (choice === 'meeting') {
+                document.getElementById('story').innerHTML = "I decided to test my luck and headed towards the meeting room door.";
+                setTimeout(() => {
+                    document.getElementById('puzzle').style.display = 'block';
+                }, 1000);
+            } else {
+                window.location.href = 'Restart.html';
+            }
+        }
+
+        function checkPuzzle() {
+            const answer = document.getElementById('puzzleInput').value.toLowerCase();
+            if (answer === 'shock') {
+                document.getElementById('puzzle').style.display = 'none';
+                document.getElementById('story').innerHTML = "Let's give this door a shock, I suppose. Here we go, one..two..three! Thump!";
+                setTimeout(() => {
+                    document.body.style.backgroundImage = 'none'; // Hide the background image
+                    document.body.classList.remove('shaking'); 
+                    document.getElementById('darkness-overlay').style.opacity = '1';
+                    setTimeout(() => {
+                        window.location.href = 'ConferenceRoom.html';
+                    }, 1000);
+                }, 1000);
+            } else {
+                alert('That doesn\'t seem right...');
+            }
+        }
+
+        document.getElementById('story').addEventListener('click', advanceStory);
+        window.onload = showStoryPart;
+    </script>
+</body>
+</html>

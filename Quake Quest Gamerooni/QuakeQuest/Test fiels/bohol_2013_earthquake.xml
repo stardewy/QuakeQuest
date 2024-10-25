@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<q:quakeml xmlns:q="http://quakeml.org/xmlns/quakeml/1.2">
+  <eventParameters publicID="smi:local/cat">
+    <event publicID="smi:local/event_0">
+      <origin publicID="smi:local/origin_0">
+        <time>
+          <value>2013-10-15T08:12:00.000000Z</value>
+        </time>
+        <latitude>
+          <value>9.86</value>
+        </latitude>
+        <longitude>
+          <value>124.11</value>
+        </longitude>
+        <depth>
+          <value>33000.0</value>
+        </depth>
+      </origin>
+      <magnitude publicID="smi:local/magnitude_0">
+        <mag>
+          <value>7.2</value>
+        </mag>
+      </magnitude>
+    </event>
+    <!-- Other events will be listed here -->
+  </eventParameters>
+</q:quakeml>

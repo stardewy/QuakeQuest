@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Bedroom</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+            transition: background 1s ease-in-out;
+        }
+        #story {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            user-select: none;
+            width: 50%;
+            color: white;
+            display: none;
+        }
+        #choices {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+        }
+        .choice-btn {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
+            background-color: #555;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 5px;
+            width: 80%;
+        }
+        .choice-btn:hover {
+            background-color: #777;
+        }
+        #action-message {
+            display: none;
+            font-size: 24px;
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        /* Shake animation for the background */
+        @keyframes shake-background {
+            0%, 100% { background-position: center; }
+            10%, 30%, 50%, 70%, 90% { background-position: -10px center; }
+            20%, 40%, 60%, 80% { background-position: 10px center; }
+        }
+        .shaking-background {
+            animation: shake-background 0.5s infinite;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Audio for thunder and shaking -->
+    <audio id="thunderSound" src="thunder.mp3"></audio>
+    <audio id="shakingSound" src="rumble.mp3"></audio>
+
+    <!-- Story Section -->
+    <div id="story" onclick="advanceStory()"></div>
+    
+    <!-- Choices Section -->
+    <div id="choices">
+        <button class="choice-btn" onclick="makeChoice('doorway')">Run to the doorway</button>
+        <button class="choice-btn" onclick="makeChoice('bookshelf')">Take shelter near bookshelf</button>
+        <button class="choice-btn" onclick="makeChoice('table')">Hide under the table</button>
+    </div>
+
+    <!-- Clickable Areas (these aren't working) -->
+    <map> 
+        <area shape="rect" coords="2500, 0, 5000, 1406" onclick="getGoBag()">
+        <area shape="rect" coords="0, 1406, 2500, 2812" onclick="goToDoor()">
+    </map>
+
+    <!-- Action Message (for grabbing go bag, etc.) -->
+    <div id="action-message">Grab go bag. [Emergency supply kit obtained!]</div>
+
+    <script>
+        const storyParts = [
+            { text: "#%&#. Wake up. [Thunderous noise]", background: "black.jpg", playSound: "thunder" },
+            { text: "Am I still dreaming? Why is everything shaking…?", background: "bedroom.jpg" },
+            { text: "Stuff falling over [bookshelf, pictures].", background: "bedroom.jpg", shake: true },
+            { text: "Watch out! That building is falling!", background: "outside.jpg", shake: true },
+            { text: "I can't believe this is happening.", background: "outside.jpg", shake: true },
+            { text: "I need to calm down. The last thing I need is to panic and risk having the building collapse on me.", background: "bedroom.jpg",  shake: true },
+            { text: "What should I do?", background: "bedroom.jpg", pauseForChoice: true,  shake: true},
+            { text: "The shaking finally stopped, for now.", background: "bedroom.jpg", shake: false },
+            { text: "I need to head outside and find an evacuation center. Shouldn’t forget to take my <b>go bag</b> along the way.", background: "bedroom.jpg" },
+            { text: "Got it! Time to <b>head out</b>.", background: "bedroom.jpg" }
+        ];
+
+        let currentPartIndex = 0;
+
+        function displayStoryPart() {
+            const storyElement = document.getElementById('story');
+            const choicesElement = document.getElementById('choices');
+            const part = storyParts[currentPartIndex];
+            const thunderSound = document.getElementById('thunderSound');
+            const shakingSound = document.getElementById('shakingSound');
+
+            storyElement.innerHTML = part.text;
+            document.body.style.backgroundImage = `url(${part.background})`;
+            storyElement.style.display = 'block';
+
+            // Play sound if specified
+            if (part.playSound === "thunder") {
+                thunderSound.play();
+            }
+
+            // Apply shaking animation if required
+            if (part.shake) {
+                document.body.classList.add('shaking-background');
+                shakingSound.play();
+            } else {
+                document.body.classList.remove('shaking-background');
+                shakingSound.pause();
+                shakingSound.currentTime = 0;
+            }
+
+            if (part.pauseForChoice) {
+                choicesElement.style.display = 'block';
+                storyElement.style.pointerEvents = 'none';
+            } else {
+                choicesElement.style.display = 'none';
+                storyElement.style.pointerEvents = 'auto';
+            }
+        }
+
+        function advanceStory() {
+            currentPartIndex++;
+            if (currentPartIndex < storyParts.length) {
+                displayStoryPart();
+            }
+        }
+
+        function makeChoice(choice) {
+            const choicesElement = document.getElementById('choices');
+            choicesElement.style.display = 'none';
+
+            if (choice === 'table') {
+                document.getElementById('story').innerHTML = "You live!";
+                setTimeout(() => {
+                    currentPartIndex++;  // Advance to the next part after "You live!"
+                    displayStoryPart();
+                }, 2000);  // Add a delay of 2 seconds before continuing the story
+            } else {
+                window.location.href = 'Restart.html';
+            }
+        }
+
+        function getGoBag() {
+            document.getElementById('action-message').style.display = 'block';
+        }
+
+        function goToDoor() {
+            window.location.href = 'Evacuation.html';
+        }
+
+        window.onload = displayStoryPart;
+    </script>
+</body>
+</html>
