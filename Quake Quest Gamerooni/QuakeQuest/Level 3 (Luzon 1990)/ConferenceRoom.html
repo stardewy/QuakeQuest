@@ -1,1 +1,131 @@
-wfgh
+<!--Issues:
+1. No mapped areas for the flashlight, radio, door, and key
+2. Story should pause until puzzles are done
+3. Next button should disappear during puzzles and reappear when completed
+4. Inputs say it's wrong though it's right-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Earthquake Game - Scene 2</title>
+    <style>
+        body {
+            background-image: url('conference.jpg'); /* Background for the meeting room */
+            background-size: cover;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #dialogue {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="dialogue">
+    <p id="text"></p>
+    <input type="text" id="userInput" class="hidden" />
+    <button id="nextButton">Next</button>
+</div>
+
+<script>
+    const dialogueText = [
+        "How long have I been here? I can no longer keep track. It seems like time doesn’t move when all you can see is darkness.",
+        "Ugh…I can’t see anything! But it’s a good thing the earthquake stopped, for now. The meeting room seems to have no windows, which explains the darkness. It’s giving me the heebie jeebies (chills).",
+        "However, it’s probably not a good idea to be walking around like this. I might accidentally trip over fallen objects or step on an open wiring. Looking around for a flashlight should help.",
+        "Obtained flashlight!",
+        "That’s better. I should probably check my surroundings and see what I can use to get help from here.",
+        "It’s not opening. Something must’ve fallen over and blocked it from the other side.",
+        "There’s a door on the other side of the room. Maybe I should try and see if that one opens.",
+        "This one is not opening as well… Huh, what’s that? I saw something as my flashlight moved along the floor.",
+        "Zoom in on a piece of tape stuck onto the door with writing: 'you’ll have to _ _ _ x2' '(not my fault!)'.",
+        "Have to what? Why does everything have to be shrouded in mystery?",
+        "I’ll just keep looking around, I guess…",
+        "Is that a radio? Maybe I should try it out and see if it still works. It could tell me about what’s happening outside and if help could come.",
+        "Find the radio. Broadcast.",
+        "Coming live from #%$#@!$%} news station. Just in, an earthquake with a magnitude of 7.8 hit multiple areas in Luzon! Its epicenter is reported to be near the town of Rizal, Nueva Ecija, northeast of Cabanatuan. Preliminary survey says that the city of Baguio was greatly affected. Emergency response teams have been dispatched. We advise all survivors and communities near the area to evacuate and prepare for possible aftershocks.",
+        "Turns out the shaking earlier was the mainshock, different from the foreshocks I read earlier. An earthquake of that magnitude is bound to have aftershocks that follow, so I should be careful.",
+        "Rizal, Nueva Ecija…Why does it feel like this information is important? Where is it located again? Maybe I can use something to check its location.",
+        "Interact with Philippine faults map. Baguio is encircled.",
+        "Oh, we only have this kind of map, a map of the Philippine tectonic faults… Anyway, let’s pin where the earthquake originated from…",
+        "Wait, which fault is this near to?",
+        "Type (text input) 'Digdig'.",
+        "Ah, the Digdig fault could be a possible cause for this earthquake. It’s a part of the Philippine Fault System as well…no wonder the earthquake was so intense.",
+        "All this talk of faults is reminding me of something…",
+        "Interact with tape stuck on the door.",
+        "Not my fault…You’ll have to…?",
+        "Type (text input) 'dig'.",
+        "Where is there to dig in this room?",
+        "Dig in plant pots. Acquire key.",
+        "A key! Could it possibly be the one used for the locked door?",
+        "Open door."
+    ];
+
+    let currentIndex = 0;
+
+    function showDialogue() {
+        const textElement = document.getElementById('text');
+        const userInput = document.getElementById('userInput');
+        
+        // Hide input field for general dialogues
+        userInput.classList.add('hidden');
+
+        // Check if current dialogue requires user input
+        if (dialogueText[currentIndex].includes("Type")) {
+            userInput.classList.remove('hidden');
+            userInput.value = '';
+            textElement.innerText = dialogueText[currentIndex];
+        } else {
+            textElement.innerText = dialogueText[currentIndex];
+        }
+    }
+
+    document.getElementById('nextButton').addEventListener('click', () => {
+        const userInput = document.getElementById('userInput');
+
+        // Check for correct input when necessary
+        if (userInput.classList.contains('hidden')) {
+            currentIndex++;
+            if (currentIndex < dialogueText.length) {
+                showDialogue();
+            } else {
+                alert("End of Scene!");
+            }
+        } else {
+            // Validate input for specific puzzles
+            if (currentIndex === 15 && userInput.value.toLowerCase() === 'digdig') {
+                currentIndex++;
+                userInput.classList.add('hidden');
+                showDialogue();
+            } else if (currentIndex === 18 && userInput.value.toLowerCase() === 'dig') {
+                currentIndex++;
+                userInput.classList.add('hidden');
+                showDialogue();
+            } else {
+                alert("Incorrect input, please try again.");
+            }
+        }
+    });
+
+    
+    // Check if the door is to be opened
+    if (currentIndex === 22) {
+        window.location.href = "HotelRoom.html"; // Redirect to the new file
+    }
+
+    // Initialize the first dialogue
+    showDialogue();
+</script>
+
+</body>
+</html>

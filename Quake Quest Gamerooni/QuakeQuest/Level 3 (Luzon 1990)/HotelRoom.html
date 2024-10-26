@@ -1,1 +1,168 @@
-Hoadgdfh
+<!--Issues:
+1. Unsure how to do directional lock puzzle
+2. At scene 4, change to helicopter.jpg 
+3. At text "Slowly fades into a black screen.", screen should actually fade to black
+4. No shaking animation and sound effects yet-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Earthquake Game - Scene 3 & 4</title>
+    <style>
+        body {
+            background-image: url('hotel.jpg'); /* Background for the hotel room */
+            background-size: cover;
+            color: white;
+            font-family: Arial, sans-serif;
+            transition: background-color 0.5s ease;
+        }
+        #dialogue {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+        .white-flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 9999;
+            display: none;
+        }
+        .choice {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="white-flash" id="flash"></div>
+
+<div id="dialogue">
+    <p id="text"></p>
+    <div id="choices" class="hidden"></div>
+    <input type="text" id="userInput" class="hidden" />
+    <button id="nextButton">Next</button>
+</div>
+
+<script>
+    const dialogueText = [
+        // Scene 3
+        "It seems to be…a hotel room? Let me scan the area for any useful items.",
+        "I should probably try to call for help. Now where would a guest keep their phone…",
+        "Maybe in here…But what kind of lock is this? A directional lock?",
+        "Here we go again, looking for more clues.",
+        "Agh! Another aftershock?!",
+        "There’s no table to stay under here! What should I do?!",
+        "Let me stay in this corner. The building posts should hold strong.",
+        "Phew. It stopped. Wait, what was that thing that fell out?",
+        "Inspect fallen book. The pages describe the types of faults: normal, reverse, strike-slip.",
+        "Faults often occur because of “stress” — or when rocks break due to forces.",
+        "These arrows…they remind me of the directional lock from earlier.",
+        "Which fault movement would open this lock?",
+        "Unlock directional lock by copying the arrows on the left lateral strike slip boundary graphic to open lock. ( ← → )",
+        "Safe opens.",
+        "There’s a phone! And there’s signal bars! Maybe I can try calling for help…",
+        "Hello? Hello!? Is anyone there?",
+        "Yes, hello! I’m a survivor and I’m trapped in the [!*#!] hotel.",
+        "Understood. Please hold the line as w —",
+        "Hello?! The signal got cut…",
+        "I can’t stay here! The hotel room is collapsing.",
+        "Oh no! The meeting room is also not safe anymore. If I stay here…well, that won’t be a good outcome. I have no choice, I have to head back to the dining room.",
+        "I have to get under something stable!",
+        "This table won’t hold for much longer! I need something to stabilize it…",
+        "The flashlight battery is dying! I’m stuck!",
+        "Slowly fades into a black screen.",
+        "There’s a person here! Get the paramedics. Help me hoist them up!",
+        // Scene 4
+        "I need to get out of here!",
+        "I see the helicopter! Help is on the way!",
+        "The area looks devastated. Stay calm and hold on!",
+        "Let’s hope they reach me in time."
+    ];
+
+    const choicesText = [
+        ["Hold onto chair", "Get under the bed comforter", "Crouch in a corner, cover head"], // Choices for aftershock
+        ["Correct choice!"], // Placeholder for next step after making a correct choice
+        ["Wrong choice! Redirecting..."] // Placeholder for wrong choice message
+    ];
+
+    let currentIndex = 0;
+    let inPuzzle = false;
+
+    function showDialogue() {
+        const textElement = document.getElementById('text');
+        const choicesElement = document.getElementById('choices');
+        
+        // Clear previous choices
+        choicesElement.innerHTML = '';
+        choicesElement.classList.add('hidden');
+
+        // Display the current dialogue
+        textElement.innerText = dialogueText[currentIndex];
+
+        // Check if current dialogue requires choices
+        if (currentIndex === 5) {
+            inPuzzle = true;
+            choicesElement.classList.remove('hidden');
+            choicesText[0].forEach(choice => {
+                const button = document.createElement('button');
+                button.innerText = choice;
+                button.classList.add('choice');
+                button.addEventListener('click', () => handleChoice(choice));
+                choicesElement.appendChild(button);
+            });
+        } else if (currentIndex === dialogueText.length - 1) {
+            // Final dialogue
+            setTimeout(() => {
+                showScene4();
+            }, 2000);
+        }
+    }
+
+    function handleChoice(choice) {
+        if (inPuzzle) {
+            if (choice === "Crouch in a corner, cover head") {
+                inPuzzle = false;
+                currentIndex++; // Move to next dialogue
+                showDialogue();
+            } else {
+                alert("Wrong choice! Redirecting...");
+                window.location.href = "Restart.html";
+            }
+        }
+    }
+
+    function showScene4() {
+        document.body.style.backgroundImage = "url('helicopter.jpg')"; // Change to helicopter background
+        document.getElementById('flash').style.display = 'block'; // Show white flash
+        setTimeout(() => {
+            window.location.href = "LivingEnd.html"; // Redirect to LivingEnd.html after flash
+        }, 1000); // Duration of the white flash
+    }
+
+    document.getElementById('nextButton').addEventListener('click', () => {
+        if (!inPuzzle) {
+            currentIndex++;
+            if (currentIndex < dialogueText.length) {
+                showDialogue();
+            }
+        }
+    });
+
+    // Initialize the first dialogue
+    showDialogue();
+</script>
+
+</body>
+</html>
