@@ -1,0 +1,113 @@
+<!--Issue: Image files are working, but the buttons won't redirect to their respective files-->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Levels</title>
+        <style>
+            /* Main container to center all levels side by side */
+            .levels-container {
+                display: flex;
+                justify-content: center;
+                gap: 20px; /* Space between each level */
+            }
+
+            /* Style individual level containers */
+            .lvl {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                border: 1px solid black;
+                padding: 20px;
+                width: 250px; /* Increase width for larger divs */
+                box-sizing: border-box;
+            }
+
+            /* Style individual divs within each level */
+            .lvl > div {
+                border: 1px solid black;
+                padding: 10px;
+                margin: 10px 0;
+                width: 100%;
+                box-sizing: border-box;
+                text-align: center;
+            }
+
+            /* Resize the image */
+            .lvl img {
+                max-width: 100%; /* Maximize image width within container */
+                height: auto;
+            }
+
+            /* Style the buttons */
+            .lvl button {
+                background-color: #4CAF50; /* Green background (The Quake Quest Aesthetic)*/
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+                margin-top: 10px;
+                transition: background-color 0.3s;
+            }
+
+            .lvl button:hover {
+                background-color: #45a049; /* Darker green on hover */
+            }
+
+            /* Center text for headers and paragraphs */
+            h3, p {
+                margin: 0;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Container to center and align levels side by side -->
+        <div class="levels-container">
+            <div class="lvl">
+                <div>
+                    <h3>Level 1</h3>
+                </div>
+                <div>
+                    <img src="Level 1 (Abra 2022)/Abra 2022.jpg" alt="Level 1">
+                </div>
+                <div>
+                    <p>Step into the moment as the ground trembles beneath you during the Abra 2022 earthquake. Feel the adrenaline surge as you navigate the chaos, make quick decisions, and seek safety while the world around you shakes. Can you stay calm and find a way out as the tremors continue to rattle your surroundings?</p>
+                </div>
+                <button onclick="window.location.href='Level 1 (Abra 2022)/LivingRoom.html'">Play Level 1</button>
+            </div>
+
+            <div class="lvl">
+                <div>
+                    <h3>Level 2</h3>
+                </div>
+                <div>
+                    <img src="Level 2 (Bohol 2013)/Bohol 2013.jpg" alt="Level 2">
+                </div>
+                <div>
+                    <p>The picturesque charm of Bohol is abruptly interrupted by a powerful quake in 2013. In this level, as you explore your surroundings, you'll encounter challenges and choices that reflect the experiences of real witnesses, forcing you to confront the chaos and find a way to safety amidst the destruction.</p>
+                </div>
+                <button onclick="window.location.href='Level 2 (Bohol 2013)/Bedroom.html'">Play Level 2</button>
+            </div>
+
+            <div class="lvl">
+                <div>
+                    <h3>Level 3</h3>
+                </div>
+                <div>
+                    <img src="Level 3 (Luzon 1990)/Luzon 1990.jpg" alt="Level 3">
+                </div>
+                <div>
+                    <p> <!--Would it be ethically correct to cite our reference here? (Who's POV)-->
+                        Journey back to 1990 in Luzon, where a catastrophic earthquake changed lives forever. In this level, you’ll delve into the heart of the disaster, facing the challenges that many experienced during those harrowing moments. Uncover vital survival skills as you navigate through the remnants of buildings and lives disrupted. Can you escape the shadows of history and emerge stronger?
+                    </p>
+                </div>
+                <button onclick="window.location.href='Level 3 (Luzon 1990)/DiningHall.html'">Play Level 3</button>
+            </div>
+        </div>
+    </body>
+</html>
+
+

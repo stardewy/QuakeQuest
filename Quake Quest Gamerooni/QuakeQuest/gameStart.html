@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Quake Escape: Lab of Secrets</title>
+    <title>Lindol-aryo</title>
     <link href="style.css" rel="stylesheet" type="text/css">
-    <script src="https://cdn.pyodide.org/en/stable/full/pyodide.js"></script>
-    <script>
+    <!--<script src="https://cdn.pyodide.org/en/stable/full/pyodide.js"></script>
+    <script> //did not finish this part (unsure if will keep)
         async function loadPyodideAndRun() {
             let pyodide = await loadPyodide();
             
@@ -17,19 +18,41 @@
         }
     
         window.onload = loadPyodideAndRun;
-    </script>
+    </script> -->
+    <style>
+        /* Additional styles for the iframe */
+        #gameArea {
+            width: 95vw; /* Almost full width of the viewport */
+            height: 80vh; /* Adjust the height as needed */
+            margin: 20px auto; /* Centering the game area */
+            border: 2px solid #000; /* Adding a border around the iframe */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Optional shadow for a nicer look */
+        }
+
+        iframe {
+            width: 100%; /* Full width of the game area */
+            height: 100%; /* Full height of the game area */
+            border: none; /* Remove border for cleaner look */
+        }
+
+        /* Style for the timer */
+        #timer {
+            font-size: 18px; /* Font size for better visibility */
+            margin: 10px; /* Margin for spacing */
+        }
+    </style>
 </head>
 <body>
-    <h1>Quake Escape: Lab of Secrets</h1>
-    <div id="timer">Time Left: <span id="time">300</span> seconds</div>
+    <h1>Lindol-aryo</h1>
+    <div id="timer">Time Left: <span id="time">20 minutes 0 seconds</span></div> <!-- Changed display format -->
     <div id="gameArea">
-        <!-- Game elements like puzzles, items, etc., will go here -->
+        <iframe src="Levels.html" name="ShowLevelsHere"></iframe>
     </div>
     <button onclick="showInventory()">Inventory</button>
     <button onclick="togglePause()">Pause</button>
 
     <script>
-        let timeLeft = 10; // 5 minutes
+        let timeLeft = 1200; // 20 minutes in seconds
         let timerInterval; // To hold the timer interval
         let isPaused = false; // Track the pause state
         const timerElement = document.getElementById('time');
@@ -43,29 +66,15 @@
                     window.location.href = 'TimesUp.html'; // Redirect to Times Up screen
                 } else {
                     timeLeft--;
-                    timerElement.innerText = timeLeft;
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    timerElement.innerText = `${minutes} minutes ${seconds} seconds left`; // Display format
                 }
             }, 1000);
         }
 
         startTimer(); // Start the timer initially
-
-        function showInventory() {
-            alert("Inventory is currently empty. Find items to fill it!");
-            // Add inventory logic here
-        }
-
-        function togglePause() {
-            if (isPaused) { // Unpauses the game
-                startTimer();
-                isPaused = false;
-                alert("Game resumed!");
-            } else { // Pause the game
-                clearInterval(timerInterval);
-                isPaused = true;
-                alert("Game paused. Click 'Pause' again to resume.");
-            }
-        }
     </script>
 </body>
 </html>
+
