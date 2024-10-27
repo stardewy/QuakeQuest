@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Lindol-aryo</title>
+    <style>
+        body { font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-size: cover; /* Make sure the background image covers the whole screen */
+            background-position: center;
+            transition: background 1s ease-in-out; /* Smooth transition for background changes */
+        }
+        #story {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            user-select: none;
+            width: 50%;
+        }
+        #story.end {
+            background-color: #f0f0f0;
+            color: gray;
+        }
+        #resumeBtn {
+            margin-top: 20px;
+            display: none;  /* Initially hidden */
+        }
+    </style>
+    <script>
+        const storySequence = [
+            "Home sweet home.",
+            "It’s been a week since my grandparents asked me to house-sit. It’s closer to my college, so I gladly took up the offer. The area is safe, and conveniently, there’s a church nearby.",
+            "It also cuts down the cost, since lolo also allowed me to use his study whenever I do my schoolwork. No need to commute to the library. On that note, maybe I should clean up there a bit after my all-nighter.",
+            "There’s something I’m curious about, though…why is the door to the basement locked? And hidden behind a curtain?",
+            "Is there some secret that lolo’s hiding?",
+            "I know I shouldn’t snoop around. But what can I say? The curious nature of a scientist runs in my genes.",
+            "Let me see if I can find the <strong>key</strong>. I’m sorry, lolo!",
+        ];
+
+        let currentPartIndex = 0;  // Start the story from the first part
+        let paused = false;  // Initialize paused variable
+
+        function displayStoryPart() {
+            const storyElement = document.getElementById('story');
+            const currentStoryPart = storySequence[currentPartIndex];
+            
+            storyElement.innerHTML = currentStoryPart;
+
+            if (currentPartIndex === storySequence.length - 1) {
+                storyElement.classList.add('end');
+            }
+        }
+
+        function handleClick() {
+            if (!paused && currentPartIndex < storySequence.length - 1) {
+                currentPartIndex++;  // Move to the next part
+                displayStoryPart();  // Refresh the story display with the new part
+            }
+        }
+
+        function studyroom() { // Define what happens when the study room area is clicked
+            alert("You are now entering the study room.");
+            window.location.href = "StudyRoom.html";  // Redirect to another file 
+        }
+
+        window.onload = function() {
+            displayStoryPart();
+            document.getElementById('story').addEventListener('click', handleClick);
+        };
+    </script>
+</head>
+<body>
+    <h1>July 27, 2022 (Abra)</h1>
+    <!-- Scene 1: Living Room -->
+    <div id="living-room" class="scene">
+        <img src="living-room.jpg" alt="Living Room" usemap="#mapName">
+    </div>
+    <div id="story"></div>
+    <button id="resumeBtn">Continue the story</button>
+
+    <map name="mapName">
+        <area shape="rect" coords="819,34,936,548" onclick="studyroom()">
+    </map>
+</body>
+</html>
